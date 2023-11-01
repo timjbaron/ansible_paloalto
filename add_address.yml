@@ -1,0 +1,50 @@
+---
+# Palo Alto automation using Ansible  -Tim Baron
+
+## Prompt for Variables
+- hosts: all
+  vars_prompt:
+    - name: user_id
+      prompt: "Enter your username ?"
+      private: no
+    - name: pass_id
+      prompt: "Enter your password ?"
+    - name: ip_addr
+      prompt: "What is the new IP?"
+      private: no
+    - name: ticket_number
+      prompt: "What is the ticket number? (Example: Ticket-123)"
+      private: no
+    - name: host_name
+      prompt: "What is the hostname?"
+      private: no
+    - name: port_number
+      prompt: "What is the port number?"
+      private: no
+    - name: site_number
+      prompt: "What site is it? Example: Madrid"
+      private: no
+    - name: prd_sbx
+      prompt: "What is the environment? Example: prd or sbx"
+      private: no
+
+## Conection / login variables for PA provider "device"   
+  connection: local
+
+  vars:   
+    device:
+      ip_address: '192.168.1.2'
+      username: '{{ user_id }}'
+      password: '{{ pass_id }}'
+      api_key: '{{ api_key | default(omit) }}'
+
+tasks:
+
+## 1. Address objects tasks          
+
+    - name: If address doesn't exist, create new address object
+      paloaltonetworks.panos.panos_address_object:
+        provider: '{{ device }}'
+        name: '{{ host_name }}'
+        value: '{{ ip_addr }}'
+        description: '{{ "port-" + port_number + "," + ticket_number }}'
